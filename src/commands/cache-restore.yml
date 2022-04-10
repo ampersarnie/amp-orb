@@ -1,6 +1,8 @@
+description: >
+  Commands for restoring cached data.
+
 commands:
   cache-restore:
-    description: Commands for restoring cached data.
     parameters:
       type:
         description: The type of cache to restore.
