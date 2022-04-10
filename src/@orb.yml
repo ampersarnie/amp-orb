@@ -1,14 +1,14 @@
 version: 2.1
 
 description: >
-  Merde
+  Merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde
 # What will your orb allow users to accomplish?
 # Descriptions should be short, simple, and informative.
 
 # This information will be displayed in the orb registry and is not mandatory.
 display:
-  home_url: "https://www.example.com/docs"
-  source_url: "https://www.github.com/ampersarnie/amp-orb"
+  home_url: "https://www.google.com"
+  source_url: "https://www.google.com"
 
 # If your orb requires other orbs, you can import them like this. Otherwise remove the "orbs" stanza.
 orbs:
