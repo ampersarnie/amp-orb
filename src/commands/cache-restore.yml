@@ -10,7 +10,7 @@ parameters:
   prefix:
     description: The cache key prefix
     type: string
-    default: 'v1'
+    default: v1
 steps:
   - when:
       condition:
