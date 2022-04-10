@@ -1,0 +1,43 @@
+version: 2.1
+
+description: >
+  Commands for restoring cached data.
+
+parameters:
+  type:
+    description: The type of cache to restore.
+    type: 'enum'
+    enum: ['js', 'dist', 'php']
+    default: 'js'
+  prefix:
+    description: The cache key prefix
+    type: string
+    default: 'v1'
+steps:
+  - when:
+      condition:
+        equals: [<< parameters.type >>, 'js']
+      steps:
+        - restore_cache:
+          name: Restoring JS Cache
+          keys:
+            - <<parameters.prefix>>-modules-cache-{{ checksum "package-lock.json" }}
+            - <<parameters.prefix>>-modules-cache-
+  - when:
+      condition:
+        equals: [<< parameters.type >>, 'dist']
+      steps:
+        - restore_cache:
+          name: Restoring Dist Cache
+          keys:
+            - <<parameters.prefix>>-dist-cache-{{ checksum "package-lock.json" }}
+            - <<parameters.prefix>>-dist-cache-
+  - when:
+      condition:
+        equals: [<< parameters.type >>, 'php']
+      steps:
+        - restore_cache:
+          name: Restoring PHP Cache
+          keys:
+            - <<parameters.prefix>>-php-cache-{{ checksum "composer.lock" }}
+            - <<parameters.prefix>>-php-cache-

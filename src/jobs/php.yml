@@ -1,0 +1,8 @@
+description: >
+  Build PHP.
+
+executor: default
+
+steps:
+  - checkout
+  - php-install

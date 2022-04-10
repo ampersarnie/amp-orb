@@ -1,0 +1,8 @@
+description: >
+  Build assets.
+
+executor: default
+
+steps:
+  - checkout
+  - js-install

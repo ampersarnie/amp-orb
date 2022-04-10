@@ -1,0 +1,8 @@
+description: >
+  Perform Unit Tests
+
+executor: default
+
+steps:
+  - checkout
+  - unit-tests

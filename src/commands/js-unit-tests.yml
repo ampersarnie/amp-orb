@@ -1,0 +1,33 @@
+version: 2.1
+
+description: >
+  Commands for running JS unit tests.
+
+parameters:
+  cache:
+    description: Restore and save the cache.
+    type: 'boolean'
+    default: true
+steps:
+  - when:
+    condition:
+      equals: [<< parameters.cache >>, true]
+    steps:
+      - restore_cache:
+        type: 'js'
+  - when:
+    condition:
+      equals: [<< parameters.cache >>, true]
+    steps:
+      - restore_cache:
+        type: 'dist'
+  - run:
+      when: always
+      name: NPM Install
+      command: |
+        npm ci
+  - run:
+      when: always
+      name: Build Assets
+      command: |
+        << parameters.install-command >>

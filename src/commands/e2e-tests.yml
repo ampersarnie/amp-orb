@@ -1,0 +1,36 @@
+version: 2.1
+
+description: >
+  Commands for installing php.
+
+parameters:
+  cache:
+    description: Restore and save the cache.
+    type: 'boolean'
+    default: true
+steps:
+  - when:
+    condition:
+      equals: [<< parameters.cache >>, true]
+    steps:
+      - restore_cache:
+          type: 'php'
+      - restore_cache:
+          type: 'js'
+      - restore_cache:
+          type: 'dist'
+      - run:
+          when: always
+          name: Start WP Cypress
+          command: |
+            $(npm bin)/wp-cypress start
+      - run:
+          when: always
+          name: Run Cypress Tests
+          command: |
+            npx cypress run
+      - run:
+          when: always
+          name: Stop WP Cypress
+          command: |
+            $(npm bin)/wp-cypress stop

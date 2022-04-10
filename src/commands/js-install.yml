@@ -1,0 +1,43 @@
+version: 2.1
+
+description: >
+  Commands for installing js assets.
+
+parameters:
+  install-command:
+    description: The type of cache to restore.
+    type: 'string'
+    default: 'npm run build:prod'
+  cache:
+    description: Restore and save the cache.
+    type: 'boolean'
+    default: true
+steps:
+  - when:
+    condition:
+      equals: [<< parameters.cache >>, true]
+    steps:
+      - restore_cache:
+        type: 'js'
+  - run:
+      when: always
+      name: NPM Install
+      command: |
+        npm ci
+  - run:
+      when: always
+      name: Build Assets
+      command: |
+        << parameters.install-command >>
+  - when:
+    condition:
+      equals: [<< parameters.cache >>, true]
+    steps:
+      - save_cache:
+        type: 'js'
+  - when:
+    condition:
+      equals: [<< parameters.cache >>, true]
+    steps:
+      - save_cache:
+        type: 'dist'
