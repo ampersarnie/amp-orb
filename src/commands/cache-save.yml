@@ -17,28 +17,28 @@ steps:
         equals: [<< parameters.type >>, 'js']
       steps:
         - save_cache:
-          name: Saving JS Cache
-          key: <<parameters.prefix>>-modules-cache-{{ checksum "package-lock.json" }}
-          paths:
-            - ./node_modules
-            - /home/circleci/.cache
+            name: Saving JS Cache
+            key: <<parameters.prefix>>-modules-cache-{{ checksum "package-lock.json" }}
+            paths:
+              - ./node_modules
+              - /home/circleci/.cache
   - when:
       condition:
         equals: [<< parameters.type >>, 'dist']
       steps:
         - save_cache:
-          name: Saving Dist Cache
-          key: <<parameters.prefix>>-dist-cache-{{ checksum "package-lock.json" }}
-          paths:
-            - ./inc/asset-settings.php
-            - ./dist
+            name: Saving Dist Cache
+            key: <<parameters.prefix>>-dist-cache-{{ checksum "package-lock.json" }}
+            paths:
+              - ./inc/asset-settings.php
+              - ./dist
   - when:
       condition:
         equals: [<< parameters.type >>, 'php']
       steps:
         - save_cache:
-          name: Saving PHP Cache
-          key: <<parameters.prefix>>-php-cache-{{ checksum "composer.lock" }}
-          paths:
-            - vendor
-            - /home/circleci/.config/composer/cache
+            name: Saving PHP Cache
+            key: <<parameters.prefix>>-php-cache-{{ checksum "composer.lock" }}
+            paths:
+              - vendor
+              - /home/circleci/.config/composer/cache

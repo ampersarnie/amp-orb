@@ -10,32 +10,32 @@ parameters:
   prefix:
     description: The cache key prefix
     type: string
-    default: v1
+    default: 'v1'
 steps:
   - when:
       condition:
         equals: [<< parameters.type >>, 'js']
       steps:
         - restore_cache:
-          name: Restoring JS Cache
-          keys:
-            - <<parameters.prefix>>-modules-cache-{{ checksum "package-lock.json" }}
-            - <<parameters.prefix>>-modules-cache-
+            name: Restoring JS Cache
+            keys:
+              - <<parameters.prefix>>-modules-cache-{{ checksum "package-lock.json" }}
+              - <<parameters.prefix>>-modules-cache-
   - when:
       condition:
         equals: [<< parameters.type >>, 'dist']
       steps:
         - restore_cache:
-          name: Restoring Dist Cache
-          keys:
-            - <<parameters.prefix>>-dist-cache-{{ checksum "package-lock.json" }}
-            - <<parameters.prefix>>-dist-cache-
+            name: Restoring Dist Cache
+            keys:
+              - <<parameters.prefix>>-dist-cache-{{ checksum "package-lock.json" }}
+              - <<parameters.prefix>>-dist-cache-
   - when:
       condition:
         equals: [<< parameters.type >>, 'php']
       steps:
         - restore_cache:
-          name: Restoring PHP Cache
-          keys:
-            - <<parameters.prefix>>-php-cache-{{ checksum "composer.lock" }}
-            - <<parameters.prefix>>-php-cache-
+            name: Restoring PHP Cache
+            keys:
+              - <<parameters.prefix>>-php-cache-{{ checksum "composer.lock" }}
+              - <<parameters.prefix>>-php-cache-

@@ -5,4 +5,4 @@ executor: default
 
 steps:
   - checkout
-  - unit-tests
+  - php-unit-tests

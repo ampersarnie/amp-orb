@@ -12,11 +12,11 @@ parameters:
     default: true
 steps:
   - when:
-    condition:
-      equals: [<< parameters.cache >>, true]
-    steps:
-      - restore_cache:
-        type: 'js'
+      condition:
+        equals: [<< parameters.cache >>, true]
+      steps:
+        - restore_cache:
+          type: 'js'
   - run:
       when: always
       name: NPM Install
@@ -28,14 +28,14 @@ steps:
       command: |
         << parameters.install-command >>
   - when:
-    condition:
-      equals: [<< parameters.cache >>, true]
-    steps:
-      - save_cache:
-        type: 'js'
+      condition:
+        equals: [<< parameters.cache >>, true]
+      steps:
+        - save_cache:
+          type: 'js'
   - when:
-    condition:
-      equals: [<< parameters.cache >>, true]
-    steps:
-      - save_cache:
-        type: 'dist'
+      condition:
+        equals: [<< parameters.cache >>, true]
+      steps:
+        - save_cache:
+          type: 'dist'

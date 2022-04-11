@@ -12,25 +12,25 @@ parameters:
     default: true
 steps:
   - when:
-    condition:
-      equals: [<< parameters.cache >>, true]
-    steps:
-      - restore_cache:
-          type: 'php'
-      - run:
-          when: always
-          name: Install Composer
-          command: |
-            printf '{ "github-oauth": { "github.com": "%s" } }' ${NEWSPRESS_CI_TOKEN} > $(composer config --global home)/auth.json
-            composer install
-      - run:
-          when: always
-          name: PHP Lint
-          command: |
-            composer lint:php
-  - when:
-    condition:
+      condition:
         equals: [<< parameters.cache >>, true]
-    steps:
-      - save_cache:
-          type: 'php'
+      steps:
+        - restore_cache:
+            type: 'php'
+        - run:
+            when: always
+            name: Install Composer
+            command: |
+              printf '{ "github-oauth": { "github.com": "%s" } }' ${NEWSPRESS_CI_TOKEN} > $(composer config --global home)/auth.json
+              composer install
+        - run:
+            when: always
+            name: PHP Lint
+            command: |
+              composer lint:php
+  - when:
+      condition:
+          equals: [<< parameters.cache >>, true]
+      steps:
+        - save_cache:
+            type: 'php'

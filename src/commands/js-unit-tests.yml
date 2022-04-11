@@ -8,24 +8,19 @@ parameters:
     default: true
 steps:
   - when:
-    condition:
-      equals: [<< parameters.cache >>, true]
-    steps:
-      - restore_cache:
-        type: 'js'
+      condition:
+        equals: [<< parameters.cache >>, true]
+      steps:
+        - restore_cache:
+          type: 'js'
   - when:
-    condition:
-      equals: [<< parameters.cache >>, true]
-    steps:
-      - restore_cache:
-        type: 'dist'
+      condition:
+        equals: [<< parameters.cache >>, true]
+      steps:
+        - restore_cache:
+          type: 'dist'
   - run:
       when: always
-      name: NPM Install
+      name: JS Tests
       command: |
-        npm ci
-  - run:
-      when: always
-      name: Build Assets
-      command: |
-        << parameters.install-command >>
+        npm run test:js

@@ -1,0 +1,14 @@
+Pack an Orb with local scripts.
+
+
+Usage:
+  circleci orb pack <path> [flags]
+
+Flags:
+  -h, --help   help for pack
+
+Global Flags:
+      --host string         URL to your CircleCI host, also CIRCLECI_CLI_HOST (default "https://circleci.com")
+      --skip-update-check   Skip the check for updates check run before every command.
+      --token string        your token for using CircleCI, also CIRCLECI_CLI_TOKEN
+

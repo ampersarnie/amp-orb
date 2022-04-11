@@ -1,0 +1,335 @@
+version: 2.1
+description: |
+    Merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde merde
+display:
+    home_url: https://www.google.com
+    source_url: https://www.google.com
+orbs:
+    node: circleci/node@5.0.2
+commands:
+    cache-restore:
+        description: |
+            Commands for restoring cached data.
+        parameters:
+            prefix:
+                default: v1
+                description: The cache key prefix
+                type: string
+            type:
+                default: js
+                description: The type of cache to restore.
+                enum:
+                    - js
+                    - dist
+                    - php
+                type: enum
+        steps:
+            - when:
+                condition:
+                    equals:
+                        - << parameters.type >>
+                        - js
+                steps:
+                    - restore_cache:
+                        keys:
+                            - <<parameters.prefix>>-modules-cache-{{ checksum "package-lock.json" }}
+                            - <<parameters.prefix>>-modules-cache-
+                        name: Restoring JS Cache
+            - when:
+                condition:
+                    equals:
+                        - << parameters.type >>
+                        - dist
+                steps:
+                    - restore_cache:
+                        keys:
+                            - <<parameters.prefix>>-dist-cache-{{ checksum "package-lock.json" }}
+                            - <<parameters.prefix>>-dist-cache-
+                        name: Restoring Dist Cache
+            - when:
+                condition:
+                    equals:
+                        - << parameters.type >>
+                        - php
+                steps:
+                    - restore_cache:
+                        keys:
+                            - <<parameters.prefix>>-php-cache-{{ checksum "composer.lock" }}
+                            - <<parameters.prefix>>-php-cache-
+                        name: Restoring PHP Cache
+    cache-save:
+        description: |
+            Commands for saving cache data.
+        parameters:
+            prefix:
+                default: v1
+                description: The cache key prefix
+                type: string
+            type:
+                default: js
+                description: The type of cache to set.
+                enum:
+                    - js
+                    - dist
+                    - php
+                type: enum
+        steps:
+            - when:
+                condition:
+                    equals:
+                        - << parameters.type >>
+                        - js
+                steps:
+                    - save_cache:
+                        key: <<parameters.prefix>>-modules-cache-{{ checksum "package-lock.json" }}
+                        name: Saving JS Cache
+                        paths:
+                            - ./node_modules
+                            - /home/circleci/.cache
+            - when:
+                condition:
+                    equals:
+                        - << parameters.type >>
+                        - dist
+                steps:
+                    - save_cache:
+                        key: <<parameters.prefix>>-dist-cache-{{ checksum "package-lock.json" }}
+                        name: Saving Dist Cache
+                        paths:
+                            - ./inc/asset-settings.php
+                            - ./dist
+            - when:
+                condition:
+                    equals:
+                        - << parameters.type >>
+                        - php
+                steps:
+                    - save_cache:
+                        key: <<parameters.prefix>>-php-cache-{{ checksum "composer.lock" }}
+                        name: Saving PHP Cache
+                        paths:
+                            - vendor
+                            - /home/circleci/.config/composer/cache
+    e2e-tests:
+        description: |
+            Commands for installing php.
+        parameters:
+            cache:
+                default: true
+                description: Restore and save the cache.
+                type: boolean
+        steps:
+            - when:
+                condition:
+                    equals:
+                        - << parameters.cache >>
+                        - true
+                steps:
+                    - restore_cache:
+                        type: php
+                    - restore_cache:
+                        type: js
+                    - restore_cache:
+                        type: dist
+                    - run:
+                        command: |
+                            $(npm bin)/wp-cypress start
+                        name: Start WP Cypress
+                        when: always
+                    - run:
+                        command: |
+                            npx cypress run
+                        name: Run Cypress Tests
+                        when: always
+                    - run:
+                        command: $(npm bin)/wp-cypress stop
+                        name: Stop WP Cypress
+                        when: always
+    js-install:
+        description: |
+            Commands for installing js assets.
+        parameters:
+            cache:
+                default: true
+                description: Restore and save the cache.
+                type: boolean
+            install-command:
+                default: npm run build:prod
+                description: The type of cache to restore.
+                type: string
+        steps:
+            - when:
+                condition:
+                    equals:
+                        - << parameters.cache >>
+                        - true
+                steps:
+                    - restore_cache: null
+                      type: js
+            - run:
+                command: |
+                    npm ci
+                name: NPM Install
+                when: always
+            - run:
+                command: |
+                    << parameters.install-command >>
+                name: Build Assets
+                when: always
+            - when:
+                condition:
+                    equals:
+                        - << parameters.cache >>
+                        - true
+                steps:
+                    - save_cache: null
+                      type: js
+            - when:
+                condition:
+                    equals:
+                        - << parameters.cache >>
+                        - true
+                steps:
+                    - save_cache: null
+                      type: dist
+    js-unit-tests:
+        description: |
+            Commands for running JS unit tests.
+        parameters:
+            cache:
+                default: true
+                description: Restore and save the cache.
+                type: boolean
+        steps:
+            - when:
+                condition:
+                    equals:
+                        - << parameters.cache >>
+                        - true
+                steps:
+                    - restore_cache: null
+                      type: js
+            - when:
+                condition:
+                    equals:
+                        - << parameters.cache >>
+                        - true
+                steps:
+                    - restore_cache: null
+                      type: dist
+            - run:
+                command: npm run test:js
+                name: JS Tests
+                when: always
+    php-install:
+        description: |
+            Commands for installing php.
+        parameters:
+            cache:
+                default: true
+                description: Restore and save the cache.
+                type: boolean
+            install-command:
+                default: npm run build:prod
+                description: The type of cache to restore.
+                type: string
+        steps:
+            - when:
+                condition:
+                    equals:
+                        - << parameters.cache >>
+                        - true
+                steps:
+                    - restore_cache:
+                        type: php
+                    - run:
+                        command: |
+                            printf '{ "github-oauth": { "github.com": "%s" } }' ${NEWSPRESS_CI_TOKEN} > $(composer config --global home)/auth.json
+                            composer install
+                        name: Install Composer
+                        when: always
+                    - run:
+                        command: |
+                            composer lint:php
+                        name: PHP Lint
+                        when: always
+            - when:
+                condition:
+                    equals:
+                        - << parameters.cache >>
+                        - true
+                steps:
+                    - save_cache:
+                        type: php
+    php-unit-tests:
+        description: |
+            Commands for installing php.
+        parameters:
+            cache:
+                default: true
+                type: boolean
+        steps:
+            - when:
+                condition:
+                    equals:
+                        - << parameters.cache >>
+                        - true
+                steps:
+                    - restore_cache:
+                        type: php
+                    - run:
+                        command: composer test:php
+                        name: PHP Unit Test
+                        when: always
+executors:
+    default:
+        description: |
+            This is a sample executor using Docker and Node. If you want to provide a custom environment in your orb, insert your image here. If you do not require an executor, you can simply delete this directory.
+        docker:
+            - image: cimg/php:<<parameters.tag>>
+        parameters:
+            tag:
+                default: 8.0-node
+                description: |
+                    Pick a specific cimg/php image variant: https://hub.docker.com/r/cimg/php/tags
+                type: string
+    ubuntu:
+        description: |
+            This is a sample executor using Docker and Node. If you want to provide a custom environment in your orb, insert your image here. If you do not require an executor, you can simply delete this directory.
+        machine:
+            image: ubuntu-2004:202010-01
+jobs:
+    assets:
+        description: |
+            Build assets.
+        executor: default
+        steps:
+            - checkout
+            - js-install
+    php:
+        description: |
+            Build PHP.
+        executor: default
+        steps:
+            - checkout
+            - php-install
+    unit-tests:
+        description: |
+            Perform Unit Tests
+        executor: default
+        steps:
+            - checkout
+            - php-unit-tests
+examples:
+    example:
+        description: |
+            Sample example description.
+        usage:
+            version: "2.1"
+            orbs:
+                <orb-name>: <namespace>/<orb-name>@1.2.3
+            workflows:
+                use-my-orb:
+                    jobs:
+                        - <orb-name>/<job-name>
+
